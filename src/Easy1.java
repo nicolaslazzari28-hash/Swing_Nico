@@ -9,7 +9,9 @@ public class Easy1 implements ActionListener {
     private JMenuBar mb;
     private JMenu file, edit, help;
     private JMenuItem cut, copy, paste, selectAll;
-    private JTextArea ta; //typing area
+    private JTextArea ta;
+    private JTextArea outputArea;
+    private JButton submitButton, resetButton, clearButton;
     private int WIDTH=800;
     private int HEIGHT=700;
 
@@ -24,9 +26,9 @@ public class Easy1 implements ActionListener {
     }
 
     private void prepareGUI() {
-        mainFrame = new JFrame("Java SWING Examples");
+        mainFrame = new JFrame("Text Submission App");
         mainFrame.setSize(WIDTH, HEIGHT);
-        mainFrame.setLayout(new GridLayout(2, 2));
+        mainFrame.setLayout(new BorderLayout());
 
         //menu at top
         cut = new JMenuItem("cut");
@@ -49,59 +51,47 @@ public class Easy1 implements ActionListener {
         mb.add(file);
         mb.add(edit);
         mb.add(help);
-        //end menu at top
 
-        //ta = new JTextArea();
-       // ta.setBounds(50, 5, WIDTH-100, HEIGHT-50);
-        mainFrame.add(mb);  //add menu bar
-       // mainFrame.add(ta);//add typing area
-        mainFrame.setJMenuBar(mb); //set menu bar
+        mainFrame.setJMenuBar(mb);
 
         statusLabel = new JLabel("", JLabel.CENTER);
         statusLabel.setSize(350, 100);
 
-       // mainFrame.addWindowListener(new WindowAdapter() {
-         //   public void windowClosing(WindowEvent windowEvent) {
-            //    System.exit(0);
-          //  }
-       // });
-        //controlPanel = new JPanel();
-       // controlPanel.setLayout(new FlowLayout()); //set the layout of the pannel
-
-       // mainFrame.add(controlPanel);
-       // mainFrame.add(statusLabel);
         mainFrame.setVisible(true);
     }
 
     private void showEventDemo() {
 
-        JButton oneButton = new JButton("OK");
-        JButton twoButton = new JButton("Submit");
-        JButton threeButton = new JButton("Cancel");
-        JButton fourButton = new JButton("OK");
-        JButton fiveButton = new JButton("Submit");
+        ta = new JTextArea();
+        ta.setBackground(Color.blue);
+        outputArea = new JTextArea();
+        outputArea.setBackground(Color.orange);
+        outputArea.setEditable(false);
+//w3 schools citing
+        submitButton = new JButton("Submit");
+        submitButton.setBackground(Color.yellow);
+        resetButton = new JButton("Reset");
+        clearButton = new JButton("Clear Last");
 
+        submitButton.setActionCommand("Submit");
+        resetButton.setActionCommand("Reset");
+        clearButton.setActionCommand("Clear Last");
 
-        oneButton.setActionCommand("button 1");
-        twoButton.setActionCommand("button 2");
-        threeButton.setActionCommand("button 3");
-        fourButton.setActionCommand("button 4");
-        fiveButton.setActionCommand("button 5");
+        submitButton.addActionListener(new ButtonClickListener());
+        resetButton.addActionListener(new ButtonClickListener());
+        clearButton.addActionListener(new ButtonClickListener());
 
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel.add(new JScrollPane(ta), BorderLayout.CENTER);
+        inputPanel.add(submitButton, BorderLayout.EAST);
+        mainFrame.add(inputPanel, BorderLayout.NORTH);
 
-        oneButton.addActionListener(new ButtonClickListener());
-        twoButton.addActionListener(new ButtonClickListener());
-        threeButton.addActionListener(new ButtonClickListener());
-        fourButton.addActionListener(new ButtonClickListener());
-        fiveButton.addActionListener(new ButtonClickListener());
-
-
-        mainFrame.add(oneButton);
-        mainFrame.add(twoButton);
-        mainFrame.add(threeButton);
-        mainFrame.add(fourButton);
-        mainFrame.add(fiveButton);
-        
+        mainFrame.add(new JScrollPane(outputArea), BorderLayout.CENTER);
+//w3 schools
+        controlPanel = new JPanel();
+        controlPanel.add(resetButton);
+        controlPanel.add(clearButton);
+        mainFrame.add(controlPanel, BorderLayout.SOUTH);
 
         mainFrame.setVisible(true);
     }
@@ -121,13 +111,21 @@ public class Easy1 implements ActionListener {
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
+//w3 schools
+            if (command.equals("Submit")) {
+                outputArea.append(ta.getText() + "\n");
+                ta.setText("");
+            } else if (command.equals("Reset")) {
+                ta.setText("");
+                outputArea.setText("");
+            } else if (command.equals("Clear Last")) {
+                String text = outputArea.getText();
+                int lastLine = text.lastIndexOf("\n", text.length() - 2);
 
-            if (command.equals("OK")) {
-                statusLabel.setText("Ok Button clicked.");
-            } else if (command.equals("Submit")) {
-                statusLabel.setText("Submit Button clicked.");
-            } else {
-                statusLabel.setText("Cancel Button clicked.");
+                if (lastLine >= 0)
+                    outputArea.setText(text.substring(0, lastLine + 1));
+                else
+                    outputArea.setText("");
             }
         }
     }
